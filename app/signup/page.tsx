@@ -45,7 +45,7 @@ export default function SignUpPage() {
     if (!validation.success) {
       const errors: Record<string, string> = {};
       for (const issue of validation.error.issues) {
-        const field = issue.path[0];
+        const field = String(issue.path[0]);
         if (field && !errors[field]) {
           errors[field] = issue.message;
         }
