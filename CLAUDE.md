@@ -18,7 +18,7 @@ This is a **Next.js 16 App Router** volunteer signup system for CwK, using **Sup
 ### Key Data Model (Supabase tables)
 - `events` — volunteer events with `facility`, `event_date`, `start_time`, `end_time`, `capacity`, `loops_template_id`
 - `signups` — volunteer signups with `status` (`confirmed`/`cancelled`), `cancel_token`, `reminder_sent`, and optional `user_id` (linked account or anonymous)
-- `profiles` — user profiles with `is_admin`, `username`, `email`, `avatar_url`, `banner_url`
+- `profiles` — user profiles with `is_admin`, `username`, `email`, `phone`, `avatar_url`, `banner_url`
 - `admin_invites` — pre-approved emails for admin access (`email`, `invited_by`, `accepted`)
 
 ### Auth & Access Control

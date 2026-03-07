@@ -1,8 +1,14 @@
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
+import { HomeAuthButton } from "@/components/HomeAuthButton";
 import { Piano, CalendarDays, Users, Bell } from "lucide-react";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getUser();
+  const isLoggedIn = !!data.user;
+
   return (
     <div className="flex flex-col">
       {/* Hero */}
@@ -20,9 +26,7 @@ export default function HomePage() {
           <Button size="lg" nativeButton={false} render={<Link href="/events" />}>
             Browse Events
           </Button>
-          <Button variant="outline" size="lg" nativeButton={false} render={<Link href="/login" />}>
-            Sign In
-          </Button>
+          <HomeAuthButton isLoggedIn={isLoggedIn} />
         </div>
       </section>
 
