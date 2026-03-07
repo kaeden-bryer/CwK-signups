@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { CalendarDays, Users, UserPlus } from "lucide-react";
@@ -18,11 +18,52 @@ export default async function AdminLayout({
 
   if (!user) redirect("/login?redirectTo=/admin/events");
 
-  const { data: profile } = await supabase
+  let { data: profile } = await supabase
     .from("profiles")
     .select("is_admin")
     .eq("id", user.id)
     .single();
+
+  if (!profile) {
+    const serviceClient = await createServiceClient();
+    const username =
+      user.user_metadata?.username ?? `user_${user.id.slice(0, 8)}`;
+
+    const isInvitedAdmin = await serviceClient
+      .from("admin_invites")
+      .select("id")
+      .eq("email", user.email!)
+      .eq("accepted", false)
+      .maybeSingle()
+      .then((r) => !!r.data);
+
+    if (isInvitedAdmin) {
+      await serviceClient
+        .from("admin_invites")
+        .update({ accepted: true })
+        .eq("email", user.email!)
+        .eq("accepted", false);
+    }
+
+    const { data: created } = await serviceClient
+      .from("profiles")
+      .upsert(
+        {
+          id: user.id,
+          full_name: user.user_metadata?.full_name ?? "",
+          email: user.email!,
+          username,
+          avatar_url: "/defaults/avatar.svg",
+          banner_url: "/defaults/banner.svg",
+          is_admin: isInvitedAdmin,
+        },
+        { onConflict: "id" }
+      )
+      .select("is_admin")
+      .single();
+
+    profile = created;
+  }
 
   if (!profile?.is_admin) redirect("/events");
 

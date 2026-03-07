@@ -36,8 +36,9 @@ export async function middleware(request: NextRequest) {
 
   const isAdminRoute = request.nextUrl.pathname.startsWith("/admin");
   const isMySignupsRoute = request.nextUrl.pathname.startsWith("/my-signups");
+  const isProfileRoute = request.nextUrl.pathname.startsWith("/profile");
 
-  if ((isAdminRoute || isMySignupsRoute) && !user) {
+  if ((isAdminRoute || isMySignupsRoute || isProfileRoute) && !user) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("redirectTo", request.nextUrl.pathname);

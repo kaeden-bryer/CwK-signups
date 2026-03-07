@@ -7,6 +7,8 @@ import { Heart } from "lucide-react";
 export async function Navbar() {
   let user = null;
   let isAdmin = false;
+  let username = "";
+  let avatarUrl = "/defaults/avatar.svg";
 
   try {
     const supabase = await createClient();
@@ -16,10 +18,12 @@ export async function Navbar() {
     if (user) {
       const { data: profile } = await supabase
         .from("profiles")
-        .select("is_admin")
+        .select("is_admin, username, avatar_url")
         .eq("id", user.id)
         .single();
       isAdmin = profile?.is_admin ?? false;
+      username = profile?.username ?? "";
+      avatarUrl = profile?.avatar_url ?? "/defaults/avatar.svg";
     }
   } catch {
     // Supabase not configured yet — render as unauthenticated
@@ -31,7 +35,7 @@ export async function Navbar() {
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-2 font-semibold">
             <Heart className="h-5 w-5 text-primary" />
-            <span>Volunteer Hub</span>
+            <span>Caring with Keys</span>
           </Link>
           <nav className="hidden items-center gap-4 text-sm md:flex">
             <Link
@@ -60,7 +64,12 @@ export async function Navbar() {
         </div>
         <div>
           {user ? (
-            <UserNav email={user.email ?? ""} isAdmin={isAdmin} />
+            <UserNav
+              username={username}
+              email={user.email ?? ""}
+              avatarUrl={avatarUrl}
+              isAdmin={isAdmin}
+            />
           ) : (
             <Button size="sm" nativeButton={false} render={<Link href="/login" />}>
               Sign in

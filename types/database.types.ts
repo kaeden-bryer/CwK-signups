@@ -2,7 +2,10 @@ export interface Profile {
   id: string;
   full_name: string | null;
   email: string;
+  username: string;
   phone: string | null;
+  avatar_url: string;
+  banner_url: string;
   is_admin: boolean;
   created_at: string;
 }

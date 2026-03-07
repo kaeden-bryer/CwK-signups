@@ -24,5 +24,31 @@ export const eventSchema = z.object({
   loops_template_id: z.string().optional(),
 });
 
+export const signInSchema = z.object({
+  email: z.email("Please enter a valid email address"),
+  password: z.string().min(1, "Password is required"),
+});
+
+export const signUpSchema = z
+  .object({
+    email: z.email("Please enter a valid email address"),
+    username: z
+      .string()
+      .min(3, "Username must be at least 3 characters")
+      .max(30, "Username must be at most 30 characters")
+      .regex(
+        /^[a-zA-Z0-9_]+$/,
+        "Username can only contain letters, numbers, and underscores"
+      ),
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
 export type SignupFormData = z.infer<typeof signupSchema>;
 export type EventFormData = z.infer<typeof eventSchema>;
+export type SignInFormData = z.infer<typeof signInSchema>;
+export type SignUpFormData = z.infer<typeof signUpSchema>;

@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Volunteer Hub",
+  title: "Caring with Keys",
   description: "Sign up to volunteer at upcoming events",
 };
 
