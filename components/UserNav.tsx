@@ -2,8 +2,8 @@
 
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,13 +35,10 @@ export function UserNav({ username, email, avatarUrl, isAdmin }: UserNavProps) {
       <DropdownMenuTrigger
         render={<Button variant="ghost" size="sm" className="gap-2" />}
       >
-        <Image
-          src={avatarUrl}
-          alt={username}
-          width={24}
-          height={24}
-          className="rounded-full"
-        />
+        <Avatar size="sm" className="size-6">
+          <AvatarImage src={avatarUrl} alt={username} />
+          <AvatarFallback>{username.slice(0, 1).toUpperCase()}</AvatarFallback>
+        </Avatar>
         <span className="hidden sm:inline">{username}</span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">

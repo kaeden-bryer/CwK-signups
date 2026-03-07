@@ -15,8 +15,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { toast } from "sonner";
-import Image from "next/image";
 import { Pencil } from "lucide-react";
+import { ProfileAvatar } from "@/components/profile-avatar";
+import { ProfileBanner } from "@/components/profile-banner";
+import { ImageCropDialog } from "@/components/image-crop-dialog";
 
 interface ProfileFormProps {
   profile: Profile;
@@ -27,40 +29,58 @@ export function ProfileForm({ profile }: ProfileFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [uploading, setUploading] = useState<"avatar" | "banner" | null>(null);
+  const [cropDialogOpen, setCropDialogOpen] = useState(false);
+  const [cropFile, setCropFile] = useState<File | null>(null);
+  const [cropType, setCropType] = useState<"avatar" | "banner">("avatar");
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const bannerInputRef = useRef<HTMLInputElement>(null);
 
-  async function handleImageChange(
-    type: "avatar" | "banner",
-    e: React.ChangeEvent<HTMLInputElement>
-  ) {
+  const oneMB = 1024 * 1024;
+
+  function handleFileSelect(type: "avatar" | "banner", e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
+    e.target.value = "";
     if (!file) return;
-    const oneMB = 1024 * 1024;
     if (file.size > oneMB) {
       toast.error("File must be under 1 MB");
-      e.target.value = "";
       return;
     }
+    setCropFile(file);
+    setCropType(type);
     setUploading(type);
+    setCropDialogOpen(true);
+  }
+
+  async function handleCropComplete(blob: Blob) {
+    if (!cropType) return;
+    const file = new File([blob], `${cropType}.webp`, { type: "image/webp" });
+    if (file.size > oneMB) {
+      toast.error("Cropped image is too large (max 1 MB)");
+      setUploading(null);
+      setCropFile(null);
+      return;
+    }
     const formData = new FormData();
     formData.set("file", file);
     try {
-      const result = await uploadProfileImage(type, formData);
+      const result = await uploadProfileImage(cropType, formData);
       if (result.error) {
         toast.error(result.error);
       } else {
-        toast.success(
-          type === "avatar" ? "Avatar updated" : "Banner updated"
-        );
+        toast.success(cropType === "avatar" ? "Avatar updated" : "Banner updated");
         router.refresh();
       }
     } catch {
-      toast.error("File is too large (max 1 MB)");
+      toast.error("Upload failed");
     } finally {
       setUploading(null);
-      e.target.value = "";
+      setCropFile(null);
     }
+  }
+
+  function handleCropCancel() {
+    setCropFile(null);
+    setUploading(null);
   }
 
   async function handleSubmit(formData: FormData) {
@@ -90,16 +110,9 @@ export function ProfileForm({ profile }: ProfileFormProps) {
             type="file"
             accept="image/jpeg,image/png,image/webp"
             className="hidden"
-            onChange={(e) => handleImageChange("banner", e)}
+            onChange={(e) => handleFileSelect("banner", e)}
           />
-          <Image
-            src={profile.banner_url}
-            alt="Profile banner"
-            width={1200}
-            height={300}
-            className="h-32 w-full object-cover sm:h-48"
-            priority
-          />
+          <ProfileBanner src={profile.banner_url} alt="Profile banner" />
           <button
             type="button"
             onClick={() => bannerInputRef.current?.click()}
@@ -119,14 +132,13 @@ export function ProfileForm({ profile }: ProfileFormProps) {
               type="file"
               accept="image/jpeg,image/png,image/webp"
               className="hidden"
-              onChange={(e) => handleImageChange("avatar", e)}
+              onChange={(e) => handleFileSelect("avatar", e)}
             />
-            <Image
+            <ProfileAvatar
               src={profile.avatar_url}
               alt={profile.username}
-              width={80}
-              height={80}
-              className="rounded-full border-4 border-background"
+              fallback={profile.username}
+              className="size-20 border-4 border-background"
             />
             <button
               type="button"
@@ -217,6 +229,15 @@ export function ProfileForm({ profile }: ProfileFormProps) {
           </form>
         </CardContent>
       </Card>
+
+      <ImageCropDialog
+        open={cropDialogOpen}
+        onOpenChange={setCropDialogOpen}
+        file={cropFile}
+        type={cropType}
+        onComplete={handleCropComplete}
+        onCancel={handleCropCancel}
+      />
     </div>
   );
 }
