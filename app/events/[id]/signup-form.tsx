@@ -64,7 +64,7 @@ export function SignUpForm({
             <h3 className="text-lg font-semibold">You&apos;re signed up!</h3>
             <p className="mt-1 text-sm text-muted-foreground">
               A confirmation email has been sent. You&apos;ll also receive an
-              SMS reminder on the day of the event.
+              SMS reminder on the day of the performance.
             </p>
           </div>
           {cancelUrl && !userId && (

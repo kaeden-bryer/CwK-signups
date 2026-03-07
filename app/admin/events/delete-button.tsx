@@ -11,7 +11,7 @@ export function DeleteEventButton({ eventId }: { eventId: string }) {
   const [loading, setLoading] = useState(false);
 
   async function handleDelete() {
-    if (!confirm("Are you sure you want to delete this event? This cannot be undone.")) {
+    if (!confirm("Are you sure you want to delete this performance? This cannot be undone.")) {
       return;
     }
     setLoading(true);

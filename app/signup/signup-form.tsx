@@ -223,7 +223,7 @@ export function SignUpForm({
               className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
             >
               <ArrowLeft className="h-3 w-3" />
-              Browse events without signing in
+              Browse performances without signing in
             </Link>
           </div>
         </CardContent>

@@ -24,7 +24,7 @@ export default async function HomePage() {
         </p>
         <div className="flex gap-3">
           <Button size="lg" nativeButton={false} render={<Link href="/events" />}>
-            Browse Events
+            Browse Performances
           </Button>
           <HomeAuthButton isLoggedIn={isLoggedIn} />
         </div>
@@ -39,7 +39,7 @@ export default async function HomePage() {
             </div>
             <h3 className="font-semibold">Easy Sign-Up</h3>
             <p className="text-sm text-muted-foreground">
-              Find an event that fits your schedule and register with just your
+              Find a performance that fits your schedule and register with just your
               name, email, and phone number.
             </p>
           </div>

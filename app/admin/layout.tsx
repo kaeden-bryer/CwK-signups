@@ -68,7 +68,7 @@ export default async function AdminLayout({
   if (!profile?.is_admin) redirect("/events");
 
   const navItems = [
-    { href: "/admin/events", label: "Events", icon: CalendarDays },
+    { href: "/admin/events", label: "Performances", icon: CalendarDays },
     { href: "/admin/volunteers", label: "Volunteers", icon: Users },
     { href: "/admin/invites", label: "Invite Admins", icon: UserPlus },
   ];

@@ -42,7 +42,7 @@ export async function Navbar() {
               href="/events"
               className="text-muted-foreground transition-colors hover:text-foreground"
             >
-              Events
+              Performances
             </Link>
             {user && (
               <Link

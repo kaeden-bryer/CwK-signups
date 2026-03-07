@@ -74,14 +74,14 @@ export default async function AdminEventsPage() {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Events</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Performances</h1>
           <p className="text-sm text-muted-foreground">
-            Create and manage volunteer events.
+            Create and manage performances.
           </p>
         </div>
         <Button nativeButton={false} render={<Link href="/admin/events/new" />}>
           <Plus className="mr-2 h-4 w-4" />
-          Create Event
+          Create Performance
         </Button>
       </div>
 
@@ -105,7 +105,7 @@ export default async function AdminEventsPage() {
                     colSpan={6}
                     className="py-8 text-center text-muted-foreground"
                   >
-                    No events yet. Create your first one!
+                    No performances yet. Create your first one!
                   </TableCell>
                 </TableRow>
               ) : (

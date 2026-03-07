@@ -105,7 +105,7 @@ export default async function EventsPage() {
     <div className="mx-auto max-w-4xl px-4 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">
-          Upcoming Volunteer Events
+          Upcoming Performances
         </h1>
         <p className="mt-2 text-muted-foreground">
           Find an opportunity that fits your schedule and sign up to make a
@@ -117,7 +117,7 @@ export default async function EventsPage() {
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16 text-center">
             <CalendarDays className="mb-4 h-12 w-12 text-muted-foreground/50" />
-            <h2 className="text-lg font-semibold">No upcoming events</h2>
+            <h2 className="text-lg font-semibold">No upcoming performances</h2>
             <p className="mt-1 text-sm text-muted-foreground">
               Check back soon for new volunteer opportunities.
             </p>
@@ -175,7 +175,7 @@ export default async function EventsPage() {
                   </div>
                   <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
                     {isFull ? (
-                      <Button disabled>Event Full</Button>
+                      <Button disabled>Performance Full</Button>
                     ) : (
                       <Button nativeButton={false} render={<Link href={`/events/${event.id}`} />}>
                         View &amp; Sign Up

@@ -28,7 +28,7 @@ export async function signUpForEvent(formData: FormData) {
     .single();
 
   if (!event) {
-    return { error: "Event not found." };
+    return { error: "Performance not found." };
   }
 
   const { count } = await supabase
@@ -38,7 +38,7 @@ export async function signUpForEvent(formData: FormData) {
     .eq("status", "confirmed");
 
   if ((count ?? 0) >= event.capacity) {
-    return { error: "Sorry, this event is now full." };
+    return { error: "Sorry, this performance is now full." };
   }
 
   const { data: signup, error: insertError } = await supabase

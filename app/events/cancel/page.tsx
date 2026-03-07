@@ -88,7 +88,7 @@ export default async function GuestCancelPage({
         <CardHeader>
           <CardTitle>Cancel your sign-up</CardTitle>
           <CardDescription>
-            You are about to cancel your sign-up for the following event:
+            You are about to cancel your sign-up for the following performance:
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Caring with Keys",
-  description: "Sign up to volunteer at upcoming events",
+  description: "Sign up to volunteer at upcoming performances",
 };
 
 export default function RootLayout({

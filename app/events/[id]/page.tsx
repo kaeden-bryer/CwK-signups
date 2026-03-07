@@ -137,7 +137,7 @@ export default async function EventDetailPage({
         {isFull ? (
           <Card>
             <CardContent className="py-8 text-center">
-              <p className="text-lg font-medium">This event is full</p>
+              <p className="text-lg font-medium">This performance is full</p>
               <p className="mt-1 text-sm text-muted-foreground">
                 Check back later in case spots open up from cancellations.
               </p>

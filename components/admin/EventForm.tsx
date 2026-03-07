@@ -38,11 +38,11 @@ export function EventForm({ event, action, submitLabel }: EventFormProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{event ? "Edit Event" : "Create Event"}</CardTitle>
+        <CardTitle>{event ? "Edit Performance" : "Create Performance"}</CardTitle>
         <CardDescription>
           {event
-            ? "Update the event details below."
-            : "Fill in the details for the new volunteer event."}
+            ? "Update the performance details below."
+            : "Fill in the details for the new volunteer performance."}
         </CardDescription>
       </CardHeader>
       <CardContent>

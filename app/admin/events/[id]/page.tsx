@@ -57,7 +57,7 @@ export default async function EditEventPage({
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="mb-6 text-2xl font-bold tracking-tight">Edit Event</h1>
+        <h1 className="mb-6 text-2xl font-bold tracking-tight">Edit Performance</h1>
         <EventForm
           event={typedEvent}
           action={handleUpdate}
