@@ -11,6 +11,9 @@ export async function createAccount(formData: FormData) {
     confirmPassword: formData.get("confirmPassword") as string,
   };
 
+  const fullName = (formData.get("full_name") as string) || "";
+  const phone = (formData.get("phone") as string) || "";
+
   const result = signUpSchema.safeParse(raw);
   if (!result.success) {
     return { error: result.error.issues[0].message };
@@ -32,7 +35,11 @@ export async function createAccount(formData: FormData) {
     email: raw.email,
     password: raw.password,
     email_confirm: true,
-    user_metadata: { username: raw.username },
+    user_metadata: {
+      username: raw.username,
+      ...(fullName && { full_name: fullName }),
+      ...(phone && { phone }),
+    },
   });
 
   if (error) {

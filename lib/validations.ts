@@ -48,6 +48,17 @@ export const signUpSchema = z
     path: ["confirmPassword"],
   });
 
+export const resetPasswordSchema = z
+  .object({
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
 export type SignupFormData = z.infer<typeof signupSchema>;
 export type EventFormData = z.infer<typeof eventSchema>;
 export type SignInFormData = z.infer<typeof signInSchema>;

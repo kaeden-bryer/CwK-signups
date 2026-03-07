@@ -22,7 +22,7 @@ export async function GET(request: Request) {
           .eq("id", user.id)
           .single();
 
-        if (profile?.is_admin) {
+        if (profile?.is_admin && redirectTo !== "/reset-password") {
           return NextResponse.redirect(`${origin}/admin/events`);
         }
       }

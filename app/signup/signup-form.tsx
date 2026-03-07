@@ -29,6 +29,8 @@ export function SignUpForm({
 }: SignUpFormProps) {
   const router = useRouter();
 
+  const [fullName, setFullName] = useState(initialFullName ?? "");
+  const [phone, setPhone] = useState(initialPhone ?? "");
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -68,6 +70,8 @@ export function SignUpForm({
     formData.set("username", username);
     formData.set("password", password);
     formData.set("confirmPassword", confirmPassword);
+    formData.set("full_name", fullName);
+    formData.set("phone", phone);
 
     const result = await createAccount(formData);
 
@@ -118,7 +122,8 @@ export function SignUpForm({
                 name="full_name"
                 type="text"
                 placeholder="Jane Doe"
-                defaultValue={initialFullName ?? ""}
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
               />
             </div>
 
@@ -129,7 +134,8 @@ export function SignUpForm({
                 name="phone"
                 type="tel"
                 placeholder="+15551234567"
-                defaultValue={initialPhone ?? ""}
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
               />
               <p className="text-xs text-muted-foreground">
                 E.164 format (e.g. +15551234567). Used for SMS reminders.
