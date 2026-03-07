@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎹Caring with Keys — Volunteer Signups
 
-## Getting Started
+> Because herding volunteer musicians shouldn't be harder than playing Rachmaninoff.
 
-First, run the development server:
+**CwK Signups** is a lightweight volunteer coordination app built for [Caring with Keys](https://caringwithkeys.org). Volunteers browse upcoming performance events, claim a spot in seconds, and get email confirmations + day-of SMS reminders so nobody accidentally sleeps through their shift.
+
+## ⚙️How It Works
+
+1. **Browse** — The public events page lists every upcoming performance with the facility, date, time, and remaining spots.
+2. **Sign Up** — Tap an event, fill in your name / email / phone, done. No account required (but you *can* create one for extra perks).
+3. **Get Reminded** — On the morning of the event a Twilio text nudges you awake and out the door.
+4. **Cancel Gracefully** — Plans change. Every confirmation email includes a magic cancellation link — no login needed.
+
+Logged-in volunteers also get a **My Signups** dashboard to keep track of everything in one place.
+
+## 💫For Admins
+
+Admins (invited via email allowlist) get a dashboard to:
+
+- Create, edit, and delete events
+- View all volunteer signups at a glance
+- Invite new admins
+
+## 🥞Tech Stack
+
+| Layer | Tech |
+|-------|------|
+| Framework | Next.js 16 (App Router, Server Actions) |
+| Auth & DB | Supabase (with Row-Level Security) |
+| Email | Loops (transactional templates) |
+| SMS | Twilio |
+| File Storage | Vercel Blob |
+| UI | shadcn/ui + Tailwind CSS v4 |
+| Validation | Zod |
+
+## 🛫Getting Started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
+pnpm dev        # start the dev server at localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+You'll need a `.env.local` with the keys listed in `CLAUDE.md` (Supabase, Loops, Twilio, etc.).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📜Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+pnpm dev        # development server
+pnpm build      # production build
+pnpm lint       # ESLint
+pnpm test:db    # Supabase database tests
+```
 
-## Learn More
+## License
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Private — built with care for CwK volunteers everywhere.
