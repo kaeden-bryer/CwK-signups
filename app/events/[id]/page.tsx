@@ -65,6 +65,22 @@ export default async function EventDetailPage({
     data: { user },
   } = await supabase.auth.getUser();
 
+  let defaultVolunteerName: string | null = null;
+  let defaultVolunteerPhone: string | null = null;
+
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("full_name, phone")
+      .eq("id", user.id)
+      .single();
+
+    if (profile) {
+      defaultVolunteerName = profile.full_name ?? null;
+      defaultVolunteerPhone = profile.phone ?? null;
+    }
+  }
+
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
       <Card>
@@ -132,6 +148,8 @@ export default async function EventDetailPage({
             eventId={typedEvent.id}
             userId={user?.id ?? null}
             userEmail={user?.email ?? null}
+            defaultVolunteerName={defaultVolunteerName}
+            defaultVolunteerPhone={defaultVolunteerPhone}
           />
         )}
       </div>

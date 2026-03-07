@@ -19,9 +19,17 @@ interface SignUpFormProps {
   eventId: string;
   userId: string | null;
   userEmail: string | null;
+  defaultVolunteerName?: string | null;
+  defaultVolunteerPhone?: string | null;
 }
 
-export function SignUpForm({ eventId, userId, userEmail }: SignUpFormProps) {
+export function SignUpForm({
+  eventId,
+  userId,
+  userEmail,
+  defaultVolunteerName = "",
+  defaultVolunteerPhone = "",
+}: SignUpFormProps) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -92,6 +100,7 @@ export function SignUpForm({ eventId, userId, userEmail }: SignUpFormProps) {
               id="volunteer_name"
               name="volunteer_name"
               placeholder="Jane Doe"
+              defaultValue={defaultVolunteerName ?? ""}
               required
             />
           </div>
@@ -115,6 +124,7 @@ export function SignUpForm({ eventId, userId, userEmail }: SignUpFormProps) {
               name="volunteer_phone"
               type="tel"
               placeholder="+15551234567"
+              defaultValue={defaultVolunteerPhone ?? ""}
               required
             />
             <p className="text-xs text-muted-foreground">

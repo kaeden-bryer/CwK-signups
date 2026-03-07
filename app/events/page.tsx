@@ -9,8 +9,11 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CalendarDays, Clock, MapPin, Users } from "lucide-react";
 import type { Event } from "@/types/database.types";
+
+type VolunteerDisplay = { displayName: string; avatarUrl: string };
 
 export const revalidate = 0;
 
@@ -42,6 +45,40 @@ export default async function EventsPage() {
         },
         {} as Record<string, number>
       );
+    }
+  }
+
+  let volunteerByEventId: Record<string, VolunteerDisplay> = {};
+  if (eventIds.length > 0) {
+    const { data: signupsWithProfiles } = await supabase
+      .from("signups")
+      .select("event_id, volunteer_name, user_id, profiles(avatar_url, full_name, username)")
+      .in("event_id", eventIds)
+      .eq("status", "confirmed");
+
+    if (signupsWithProfiles) {
+      const seen = new Set<string>();
+      type ProfileRow = {
+        avatar_url: string;
+        full_name: string | null;
+        username: string;
+      };
+      for (const row of signupsWithProfiles as Array<{
+        event_id: string;
+        volunteer_name: string;
+        user_id: string | null;
+        profiles: ProfileRow | ProfileRow[] | null;
+      }>) {
+        if (seen.has(row.event_id)) continue;
+        seen.add(row.event_id);
+        const raw = row.profiles;
+        const profile = Array.isArray(raw) ? raw[0] ?? null : raw;
+        volunteerByEventId[row.event_id] = {
+          displayName:
+            profile?.full_name ?? profile?.username ?? row.volunteer_name,
+          avatarUrl: profile?.avatar_url ?? "/defaults/avatar.svg",
+        };
+      }
     }
   }
 
@@ -136,13 +173,31 @@ export default async function EventsPage() {
                       {confirmed}/{event.capacity} signed up
                     </span>
                   </div>
-                  <div className="mt-4">
+                  <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
                     {isFull ? (
                       <Button disabled>Event Full</Button>
                     ) : (
                       <Button nativeButton={false} render={<Link href={`/events/${event.id}`} />}>
                         View &amp; Sign Up
                       </Button>
+                    )}
+                    {volunteerByEventId[event.id] && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Avatar size="sm" className="size-6">
+                          <AvatarImage
+                            src={volunteerByEventId[event.id].avatarUrl}
+                            alt=""
+                          />
+                          <AvatarFallback>
+                            {volunteerByEventId[event.id].displayName
+                              .slice(0, 1)
+                              .toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="max-w-[120px] truncate">
+                          {volunteerByEventId[event.id].displayName}
+                        </span>
+                      </div>
                     )}
                   </div>
                 </CardContent>

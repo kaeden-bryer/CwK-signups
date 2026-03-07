@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { updateProfile } from "./actions";
+import { updateProfile, uploadProfileImage } from "./actions";
 import type { Profile } from "@/types/database.types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/card";
 import { toast } from "sonner";
 import Image from "next/image";
+import { Pencil } from "lucide-react";
 
 interface ProfileFormProps {
   profile: Profile;
@@ -25,6 +26,42 @@ export function ProfileForm({ profile }: ProfileFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [uploading, setUploading] = useState<"avatar" | "banner" | null>(null);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const bannerInputRef = useRef<HTMLInputElement>(null);
+
+  async function handleImageChange(
+    type: "avatar" | "banner",
+    e: React.ChangeEvent<HTMLInputElement>
+  ) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const oneMB = 1024 * 1024;
+    if (file.size > oneMB) {
+      toast.error("File must be under 1 MB");
+      e.target.value = "";
+      return;
+    }
+    setUploading(type);
+    const formData = new FormData();
+    formData.set("file", file);
+    try {
+      const result = await uploadProfileImage(type, formData);
+      if (result.error) {
+        toast.error(result.error);
+      } else {
+        toast.success(
+          type === "avatar" ? "Avatar updated" : "Banner updated"
+        );
+        router.refresh();
+      }
+    } catch {
+      toast.error("File is too large (max 1 MB)");
+    } finally {
+      setUploading(null);
+      e.target.value = "";
+    }
+  }
 
   async function handleSubmit(formData: FormData) {
     setLoading(true);
@@ -37,6 +74,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
     } else {
       toast.success("Profile updated");
       router.refresh();
+      setTimeout(() => router.push("/events"), 1500);
     }
 
     setLoading(false);
@@ -47,6 +85,13 @@ export function ProfileForm({ profile }: ProfileFormProps) {
       {/* Banner & Avatar Display */}
       <Card className="overflow-hidden">
         <div className="relative">
+          <input
+            ref={bannerInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            className="hidden"
+            onChange={(e) => handleImageChange("banner", e)}
+          />
           <Image
             src={profile.banner_url}
             alt="Profile banner"
@@ -55,7 +100,27 @@ export function ProfileForm({ profile }: ProfileFormProps) {
             className="h-32 w-full object-cover sm:h-48"
             priority
           />
+          <button
+            type="button"
+            onClick={() => bannerInputRef.current?.click()}
+            disabled={uploading !== null}
+            className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-background/80 text-foreground shadow-sm transition hover:bg-background disabled:opacity-50"
+            aria-label="Change banner"
+          >
+            {uploading === "banner" ? (
+              <span className="text-xs">...</span>
+            ) : (
+              <Pencil className="h-4 w-4" />
+            )}
+          </button>
           <div className="absolute -bottom-10 left-6">
+            <input
+              ref={avatarInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+              onChange={(e) => handleImageChange("avatar", e)}
+            />
             <Image
               src={profile.avatar_url}
               alt={profile.username}
@@ -63,6 +128,19 @@ export function ProfileForm({ profile }: ProfileFormProps) {
               height={80}
               className="rounded-full border-4 border-background"
             />
+            <button
+              type="button"
+              onClick={() => avatarInputRef.current?.click()}
+              disabled={uploading !== null}
+              className="absolute -right-1 -bottom-1 flex h-8 w-8 items-center justify-center rounded-full border-2 border-background bg-background text-foreground shadow-sm transition hover:bg-muted disabled:opacity-50"
+              aria-label="Change avatar"
+            >
+              {uploading === "avatar" ? (
+                <span className="text-xs">...</span>
+              ) : (
+                <Pencil className="h-3 w-3" />
+              )}
+            </button>
           </div>
         </div>
         <div className="px-6 pb-4 pt-14">

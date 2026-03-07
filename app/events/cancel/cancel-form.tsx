@@ -26,7 +26,7 @@ export function GuestCancelForm({ token }: { token: string }) {
 
   if (done) {
     return (
-      <p className="text-center text-sm font-medium text-green-600">
+      <p className="text-center text-sm font-medium text-success">
         Your sign-up has been cancelled successfully.
       </p>
     );
