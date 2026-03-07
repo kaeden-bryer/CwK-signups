@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Heart, CalendarDays, Users, Bell } from "lucide-react";
+import { Piano, CalendarDays, Users, Bell } from "lucide-react";
 
 export default function HomePage() {
   return (
@@ -8,14 +8,13 @@ export default function HomePage() {
       {/* Hero */}
       <section className="flex flex-col items-center justify-center gap-6 px-4 py-24 text-center md:py-32">
         <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
-          <Heart className="h-8 w-8 text-primary" />
+          <Piano className="h-8 w-8 text-primary" />
         </div>
         <h1 className="max-w-2xl text-4xl font-bold tracking-tight md:text-5xl">
-          Make a difference in your community
+          Make a difference with your music
         </h1>
         <p className="max-w-lg text-lg text-muted-foreground">
-          Browse upcoming volunteer opportunities, sign up in seconds, and
-          receive reminders so you never miss your shift.
+          See upcoming performances, sign up in seconds and get email and text reminders
         </p>
         <div className="flex gap-3">
           <Button size="lg" nativeButton={false} render={<Link href="/events" />}>

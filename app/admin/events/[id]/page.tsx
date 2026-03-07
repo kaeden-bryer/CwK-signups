@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
 import type { Event, Signup } from "@/types/database.types";
+import { AdminCancelButton } from "./admin-cancel-button";
 
 export const revalidate = 0;
 
@@ -82,13 +83,14 @@ export default async function EditEventPage({
                 <TableHead>Phone</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Signed Up</TableHead>
+                <TableHead className="w-0" />
               </TableRow>
             </TableHeader>
             <TableBody>
               {typedSignups.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={5}
+                    colSpan={6}
                     className="py-8 text-center text-muted-foreground"
                   >
                     No sign-ups yet.
@@ -113,6 +115,11 @@ export default async function EditEventPage({
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                       {new Date(signup.created_at).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>
+                      {signup.status === "confirmed" && (
+                        <AdminCancelButton signupId={signup.id} />
+                      )}
                     </TableCell>
                   </TableRow>
                 ))
