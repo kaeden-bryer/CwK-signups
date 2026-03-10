@@ -20,14 +20,26 @@ export const revalidate = 0;
 export default async function EventsPage() {
   const supabase = await createClient();
 
+  const today = new Date().toISOString().split("T")[0];
+
   const { data: events } = await supabase
     .from("events")
     .select("*")
-    .gte("event_date", new Date().toISOString().split("T")[0])
+    .gte("event_date", today)
     .order("event_date", { ascending: true })
     .order("start_time", { ascending: true });
 
-  const eventIds = (events as Event[] | null)?.map((e) => e.id) ?? [];
+  const { data: pastEvents } = await supabase
+    .from("events")
+    .select("*")
+    .lt("event_date", today)
+    .order("event_date", { ascending: false })
+    .order("start_time", { ascending: false })
+    .limit(12);
+
+  const upcomingIds = (events as Event[] | null)?.map((e) => e.id) ?? [];
+  const pastIds = (pastEvents as Event[] | null)?.map((e) => e.id) ?? [];
+  const eventIds = [...upcomingIds, ...pastIds];
 
   let signupCounts: Record<string, number> = {};
   if (eventIds.length > 0) {
@@ -101,6 +113,90 @@ export default async function EventsPage() {
     });
   }
 
+  function EventCard({ event, isPast }: { event: Event; isPast: boolean }) {
+    const confirmed = signupCounts[event.id] || 0;
+    const spotsLeft = event.capacity - confirmed;
+    const isFull = spotsLeft <= 0;
+
+    return (
+      <Card className="transition-shadow hover:shadow-md">
+        <CardHeader>
+          <div className="flex items-start justify-between">
+            <div>
+              <CardTitle className="text-xl">{event.facility}</CardTitle>
+              {event.description && (
+                <CardDescription className="mt-1">
+                  {event.description}
+                </CardDescription>
+              )}
+            </div>
+            {isPast ? (
+              <Badge variant="secondary">Completed</Badge>
+            ) : isFull ? (
+              <Badge variant="secondary">Full</Badge>
+            ) : (
+              <Badge variant="default">
+                {spotsLeft} {spotsLeft === 1 ? "spot" : "spots"} left
+              </Badge>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <CalendarDays className="h-4 w-4" />
+              {formatDate(event.event_date)}
+            </span>
+            <span className="flex items-center gap-1">
+              <Clock className="h-4 w-4" />
+              {formatTime(event.start_time)}
+              {event.end_time && ` – ${formatTime(event.end_time)}`}
+            </span>
+            <span className="flex items-center gap-1">
+              <MapPin className="h-4 w-4" />
+              {event.facility}
+            </span>
+            <span className="flex items-center gap-1">
+              <Users className="h-4 w-4" />
+              {confirmed}/{event.capacity} signed up
+            </span>
+          </div>
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
+            {isPast ? (
+              <Button nativeButton={false} render={<Link href={`/events/${event.id}`} />}>
+                View Details
+              </Button>
+            ) : isFull ? (
+              <Button disabled>Performance Full</Button>
+            ) : (
+              <Button nativeButton={false} render={<Link href={`/events/${event.id}`} />}>
+                View &amp; Sign Up
+              </Button>
+            )}
+            {volunteerByEventId[event.id] && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Avatar size="sm" className="size-6">
+                  <AvatarImage
+                    src={volunteerByEventId[event.id].avatarUrl}
+                    alt=""
+                  />
+                  <AvatarFallback>
+                    {volunteerByEventId[event.id].displayName
+                      .slice(0, 1)
+                      .toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="max-w-[120px] truncate">
+                  {volunteerByEventId[event.id].displayName}
+                </span>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
       <div className="mb-8">
@@ -125,86 +221,28 @@ export default async function EventsPage() {
         </Card>
       ) : (
         <div className="grid gap-4">
-          {(events as Event[]).map((event) => {
-            const confirmed = signupCounts[event.id] || 0;
-            const spotsLeft = event.capacity - confirmed;
-            const isFull = spotsLeft <= 0;
-
-            return (
-              <Card key={event.id} className="transition-shadow hover:shadow-md">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle className="text-xl">
-                        {event.facility}
-                      </CardTitle>
-                      {event.description && (
-                        <CardDescription className="mt-1">
-                          {event.description}
-                        </CardDescription>
-                      )}
-                    </div>
-                    {isFull ? (
-                      <Badge variant="secondary">Full</Badge>
-                    ) : (
-                      <Badge variant="default">
-                        {spotsLeft} {spotsLeft === 1 ? "spot" : "spots"} left
-                      </Badge>
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <CalendarDays className="h-4 w-4" />
-                      {formatDate(event.event_date)}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Clock className="h-4 w-4" />
-                      {formatTime(event.start_time)}
-                      {event.end_time && ` – ${formatTime(event.end_time)}`}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <MapPin className="h-4 w-4" />
-                      {event.facility}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Users className="h-4 w-4" />
-                      {confirmed}/{event.capacity} signed up
-                    </span>
-                  </div>
-                  <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
-                    {isFull ? (
-                      <Button disabled>Performance Full</Button>
-                    ) : (
-                      <Button nativeButton={false} render={<Link href={`/events/${event.id}`} />}>
-                        View &amp; Sign Up
-                      </Button>
-                    )}
-                    {volunteerByEventId[event.id] && (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Avatar size="sm" className="size-6">
-                          <AvatarImage
-                            src={volunteerByEventId[event.id].avatarUrl}
-                            alt=""
-                          />
-                          <AvatarFallback>
-                            {volunteerByEventId[event.id].displayName
-                              .slice(0, 1)
-                              .toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span className="max-w-[120px] truncate">
-                          {volunteerByEventId[event.id].displayName}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
+          {(events as Event[]).map((event) => (
+            <EventCard key={event.id} event={event} isPast={false} />
+          ))}
         </div>
+      )}
+
+      {pastEvents && pastEvents.length > 0 && (
+        <>
+          <div className="mb-8 mt-16">
+            <h2 className="text-2xl font-bold tracking-tight">
+              Past Performances
+            </h2>
+            <p className="mt-2 text-muted-foreground">
+              A look back at previous volunteer performances.
+            </p>
+          </div>
+          <div className="grid gap-4">
+            {(pastEvents as Event[]).map((event) => (
+              <EventCard key={event.id} event={event} isPast={true} />
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
